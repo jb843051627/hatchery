@@ -16,8 +16,8 @@ func NewReadingCache() *ReadingCache {
 }
 
 func (c *ReadingCache) Update(r *model.SensorReading) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+	c.mu.RLock()
+	defer c.mu.RUnlock()
 	if c.latest[r.IncubatorID] == nil {
 		c.latest[r.IncubatorID] = make(map[string]*model.SensorReading)
 	}
