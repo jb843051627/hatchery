@@ -51,9 +51,6 @@ func (s *ReadingService) BatchIngest(ctx context.Context, readings []*model.Sens
 	count := 0
 	var mu sync.Mutex
 	for _, r := range readings {
-		if ctx.Err() != nil {
-			break
-		}
 		id, err := s.store.Create(ctx, r.IncubatorID, r.SensorType, r.Value, r.RecordedAt)
 		if err != nil {
 			continue
