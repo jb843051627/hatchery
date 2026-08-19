@@ -101,7 +101,7 @@ func (s *ReportService) ExportReadings(ctx context.Context, incubatorID int64, f
 			IncubatorID: r.IncubatorID,
 			SensorType:  r.SensorType,
 			Value:       r.Value,
-			RecordedAt:  r.RecordedAt.Format("2006-01-02 15:04:05"),
+			RecordedAt:  r.RecordedAt.UTC().Format("2006-01-02 15:04:05"),
 		}
 	}
 	sort.Slice(out, func(i, j int) bool {
