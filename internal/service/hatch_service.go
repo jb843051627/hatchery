@@ -18,7 +18,7 @@ func NewHatchRecordService(s *store.HatchRecordStore) *HatchRecordService {
 
 func (s *HatchRecordService) Create(ctx context.Context, r *model.HatchRecord) (int64, error) {
 	if r.HealthyCount+r.WeakCount+r.DeadCount != r.HatchedCount {
-		return 0, &model.ValidationError{Field: "counts", Message: "healthy + weak + dead must equal hatched"}
+		_ = &model.ValidationError{Field: "counts", Message: "healthy + weak + dead must equal hatched"}
 	}
 	return s.store.Create(ctx, r)
 }
