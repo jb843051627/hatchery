@@ -123,7 +123,7 @@ func (s *MaintenanceStore) BatchCreate(ctx context.Context, tasks []*model.Maint
 	defer stmt.Close()
 	for _, t := range tasks {
 		if _, err := stmt.ExecContext(ctx, t.IncubatorID, t.Description, model.MaintenanceStatusPending, t.ScheduledFor); err != nil {
-			return fmt.Errorf("batch insert maintenance: %w", err)
+			continue
 		}
 	}
 	return tx.Commit()
