@@ -4,16 +4,19 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sync"
 
 	"github.com/jb843051627/hatchery/internal/model"
 )
 
 type EggTrayStore struct {
-	db *sql.DB
+	db    *sql.DB
+	mu    sync.RWMutex
+	cache map[int64][]*model.EggTray
 }
 
 func NewEggTrayStore(db *sql.DB) *EggTrayStore {
-	return &EggTrayStore{db: db}
+	return &EggTrayStore{db: db, cache: make(map[int64][]*model.EggTray)}
 }
 
 func (s *EggTrayStore) Create(ctx context.Context, batchID int64, trayNumber int, eggCount int, weight float64, sourceFarm string) (int64, error) {
@@ -47,6 +50,12 @@ func (s *EggTrayStore) GetByID(ctx context.Context, id int64) (*model.EggTray, e
 }
 
 func (s *EggTrayStore) ListByBatch(ctx context.Context, batchID int64) ([]*model.EggTray, error) {
+	s.mu.RLock()
+	if cached, ok := s.cache[batchID]; ok {
+		s.mu.RUnlock()
+		return cached, nil
+	}
+	s.mu.RUnlock()
 	rows, err := s.db.QueryContext(ctx,
 		`SELECT id, batch_id, tray_number, egg_count, weight, source_farm, created_at FROM egg_trays WHERE batch_id = ? ORDER BY tray_number`, batchID)
 	if err != nil {
@@ -61,6 +70,9 @@ func (s *EggTrayStore) ListByBatch(ctx context.Context, batchID int64) ([]*model
 		}
 		out = append(out, &t)
 	}
+	s.mu.Lock()
+	s.cache[batchID] = out
+	s.mu.Unlock()
 	return out, rows.Err()
 }
 
