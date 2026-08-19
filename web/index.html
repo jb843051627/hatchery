@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>孵化场监控系统</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>孵化场监控</h1>
+    <nav>
+      <button class="tab active" data-view="dashboard">概览</button>
+      <button class="tab" data-view="incubators">孵化器</button>
+      <button class="tab" data-view="batches">批次</button>
+      <button class="tab" data-view="readings">读数</button>
+      <button class="tab" data-view="alerts">告警</button>
+    </nav>
+  </header>
+  <main id="content"></main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
