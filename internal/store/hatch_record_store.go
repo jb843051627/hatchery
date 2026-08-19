@@ -24,6 +24,12 @@ func (s *HatchRecordStore) Create(ctx context.Context, r *model.HatchRecord) (in
 	if r.HatchedCount < 0 || r.HealthyCount < 0 || r.WeakCount < 0 || r.DeadCount < 0 {
 		return 0, &model.ValidationError{Field: "counts", Message: "counts must be non-negative"}
 	}
+	if r.HealthyCount+r.WeakCount+r.DeadCount != r.HatchedCount {
+		return 0, &model.ValidationError{Field: "counts", Message: "healthy + weak + dead must equal hatched"}
+	}
+	if r.GradedBy == "" {
+		return 0, &model.ValidationError{Field: "graded_by", Message: "graded_by is required"}
+	}
 	res, err := s.db.ExecContext(ctx,
 		`INSERT INTO hatch_records(batch_id, hatched_count, healthy_count, weak_count, dead_count, hatch_date, graded_by) VALUES(?,?,?,?,?,?,?)`,
 		r.BatchID, r.HatchedCount, r.HealthyCount, r.WeakCount, r.DeadCount, r.HatchDate, r.GradedBy)
