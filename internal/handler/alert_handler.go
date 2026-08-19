@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -57,7 +58,7 @@ func (h *AlertHandler) Acknowledge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := h.svc.Acknowledge(r.Context(), id); err != nil {
-		writeError(w, err)
+		writeError(w, fmt.Errorf("acknowledge alert: %w", err))
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
