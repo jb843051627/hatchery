@@ -42,7 +42,7 @@ func (s *ScheduleStore) GetByID(ctx context.Context, id int64) (*model.Schedule,
 	var sc model.Schedule
 	err := row.Scan(&sc.ID, &sc.IncubatorID, &sc.BatchID, &sc.Phase, &sc.TargetTemp, &sc.TargetHumidity, &sc.StartTime, &sc.EndTime, &sc.Status, &sc.CreatedAt)
 	if err == sql.ErrNoRows {
-		return nil, nil
+		return nil, model.ErrScheduleNotFound
 	}
 	if err != nil {
 		return nil, fmt.Errorf("get schedule %d: %w", id, err)
@@ -108,7 +108,7 @@ func (s *ScheduleStore) FindConflict(ctx context.Context, incubatorID int64, sta
 	var sc model.Schedule
 	err := row.Scan(&sc.ID, &sc.IncubatorID, &sc.BatchID, &sc.Phase, &sc.TargetTemp, &sc.TargetHumidity, &sc.StartTime, &sc.EndTime, &sc.Status, &sc.CreatedAt)
 	if err == sql.ErrNoRows {
-		return nil, nil
+		return nil, model.ErrScheduleNotFound
 	}
 	if err != nil {
 		return nil, fmt.Errorf("find conflict: %w", err)
