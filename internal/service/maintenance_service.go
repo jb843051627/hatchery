@@ -51,5 +51,13 @@ func (s *MaintenanceService) BatchCreate(ctx context.Context, tasks []*model.Mai
 	if len(tasks) == 0 {
 		return &model.ValidationError{Field: "tasks", Message: "tasks is empty"}
 	}
+	for i, t := range tasks {
+		if t.IncubatorID <= 0 {
+			return &model.ValidationError{Field: fmt.Sprintf("tasks[%d].incubator_id", i), Message: "incubator_id must be positive"}
+		}
+		if t.Description == "" {
+			return &model.ValidationError{Field: fmt.Sprintf("tasks[%d].description", i), Message: "description is required"}
+		}
+	}
 	return s.store.BatchCreate(ctx, tasks)
 }
