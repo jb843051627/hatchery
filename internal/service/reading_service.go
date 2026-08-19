@@ -51,6 +51,9 @@ func (s *ReadingService) BatchIngest(ctx context.Context, readings []*model.Sens
 	count := 0
 	var mu sync.Mutex
 	for _, r := range readings {
+		if ctx.Err() != nil {
+			return count, ctx.Err()
+		}
 		id, err := s.store.Create(ctx, r.IncubatorID, r.SensorType, r.Value, r.RecordedAt)
 		if err != nil {
 			continue
@@ -65,6 +68,9 @@ func (s *ReadingService) BatchIngest(ctx context.Context, readings []*model.Sens
 		mu.Lock()
 		count++
 		mu.Unlock()
+	}
+	if ctx.Err() != nil {
+		return count, ctx.Err()
 	}
 	return count, nil
 }

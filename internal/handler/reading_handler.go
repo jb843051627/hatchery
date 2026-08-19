@@ -36,6 +36,10 @@ func (h *ReadingHandler) Record(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ReadingHandler) BatchIngest(w http.ResponseWriter, r *http.Request) {
+	if r.Context().Err() != nil {
+		writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": "request context cancelled"})
+		return
+	}
 	var readings []*model.SensorReading
 	if err := decodeJSON(r, &readings); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid json"})
