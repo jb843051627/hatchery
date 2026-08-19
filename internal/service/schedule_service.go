@@ -35,9 +35,6 @@ func (s *ScheduleService) Get(ctx context.Context, id int64) (*model.Schedule, e
 	if err != nil {
 		return nil, fmt.Errorf("get schedule: %w", err)
 	}
-	if sc == nil {
-		return nil, model.ErrScheduleNotFound
-	}
 	return sc, nil
 }
 
@@ -53,9 +50,6 @@ func (s *ScheduleService) Activate(ctx context.Context, id int64) error {
 	sc, err := s.store.GetByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("get schedule: %w", err)
-	}
-	if sc == nil {
-		return model.ErrScheduleNotFound
 	}
 	if sc.Status != model.ScheduleStatusPending {
 		return &model.ValidationError{Field: "status", Message: "schedule must be pending to activate"}

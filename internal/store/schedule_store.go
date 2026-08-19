@@ -42,7 +42,7 @@ func (s *ScheduleStore) GetByID(ctx context.Context, id int64) (*model.Schedule,
 	var sc model.Schedule
 	err := row.Scan(&sc.ID, &sc.IncubatorID, &sc.BatchID, &sc.Phase, &sc.TargetTemp, &sc.TargetHumidity, &sc.StartTime, &sc.EndTime, &sc.Status, &sc.CreatedAt)
 	if err == sql.ErrNoRows {
-		return nil, model.ErrScheduleNotFound
+		return nil, nil
 	}
 	if err != nil {
 		return nil, fmt.Errorf("get schedule %d: %w", id, err)
