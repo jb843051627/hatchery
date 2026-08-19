@@ -40,7 +40,7 @@ func (s *IncubatorStore) GetByID(ctx context.Context, id int64) (*model.Incubato
 	var inc model.Incubator
 	err := row.Scan(&inc.ID, &inc.Name, &inc.Capacity, &inc.Status, &inc.Location, &inc.InstalledAt, &inc.CreatedAt)
 	if err == sql.ErrNoRows {
-		return nil, model.ErrIncubatorNotFound
+		return nil, nil
 	}
 	if err != nil {
 		return nil, fmt.Errorf("get incubator %d: %w", id, err)

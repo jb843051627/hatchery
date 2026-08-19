@@ -22,9 +22,6 @@ func (s *IncubatorService) Get(ctx context.Context, id int64) (*model.Incubator,
 	if err != nil {
 		return nil, fmt.Errorf("get incubator: %w", err)
 	}
-	if inc == nil {
-		return nil, model.ErrIncubatorNotFound
-	}
 	return inc, nil
 }
 
@@ -44,12 +41,9 @@ func (s *IncubatorService) ListByStatus(ctx context.Context, status string) ([]*
 }
 
 func (s *IncubatorService) UpdateStatus(ctx context.Context, id int64, status string) error {
-	inc, err := s.store.GetByID(ctx, id)
+	_, err := s.store.GetByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("get incubator: %w", err)
-	}
-	if inc == nil {
-		return model.ErrIncubatorNotFound
 	}
 	return s.store.UpdateStatus(ctx, id, status)
 }
