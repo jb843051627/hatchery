@@ -28,13 +28,7 @@ func (s *HatchRecordService) Get(ctx context.Context, id int64) (*model.HatchRec
 }
 
 func (s *HatchRecordService) ListByBatch(ctx context.Context, batchID int64) ([]*model.HatchRecord, error) {
-	records, err := s.store.ListByBatch(ctx, batchID)
-	if err != nil {
-		return nil, err
-	}
-	out := make([]*model.HatchRecord, len(records))
-	copy(out, records)
-	return out, nil
+	return s.store.ListByBatch(ctx, batchID)
 }
 
 func (s *HatchRecordService) ListByDateRange(ctx context.Context, from, to interface{}) ([]*model.HatchRecord, error) {

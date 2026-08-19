@@ -4,17 +4,20 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/jb843051627/hatchery/internal/model"
 )
 
 type HatchRecordStore struct {
-	db *sql.DB
+	db    *sql.DB
+	mu    sync.RWMutex
+	cache map[int64][]*model.HatchRecord
 }
 
 func NewHatchRecordStore(db *sql.DB) *HatchRecordStore {
-	return &HatchRecordStore{db: db}
+	return &HatchRecordStore{db: db, cache: make(map[int64][]*model.HatchRecord)}
 }
 
 func (s *HatchRecordStore) Create(ctx context.Context, r *model.HatchRecord) (int64, error) {
@@ -48,6 +51,12 @@ func (s *HatchRecordStore) GetByID(ctx context.Context, id int64) (*model.HatchR
 }
 
 func (s *HatchRecordStore) ListByBatch(ctx context.Context, batchID int64) ([]*model.HatchRecord, error) {
+	s.mu.RLock()
+	if cached, ok := s.cache[batchID]; ok {
+		s.mu.RUnlock()
+		return cached, nil
+	}
+	s.mu.RUnlock()
 	rows, err := s.db.QueryContext(ctx,
 		`SELECT id, batch_id, hatched_count, healthy_count, weak_count, dead_count, hatch_date, graded_by, created_at FROM hatch_records WHERE batch_id = ? ORDER BY hatch_date`, batchID)
 	if err != nil {
@@ -62,6 +71,9 @@ func (s *HatchRecordStore) ListByBatch(ctx context.Context, batchID int64) ([]*m
 		}
 		out = append(out, &r)
 	}
+	s.mu.Lock()
+	s.cache[batchID] = out
+	s.mu.Unlock()
 	return out, rows.Err()
 }
 
