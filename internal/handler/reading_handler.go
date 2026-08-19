@@ -72,5 +72,5 @@ func (h *ReadingHandler) Export(w http.ResponseWriter, r *http.Request) {
 		writeError(w, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, readings)
+	writeJSON(w, http.StatusOK, map[string]interface{}{"readings": readings, "timezone": "local"})
 }

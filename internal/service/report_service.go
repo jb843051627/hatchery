@@ -101,12 +101,20 @@ func (s *ReportService) ExportReadings(ctx context.Context, incubatorID int64, f
 			IncubatorID: r.IncubatorID,
 			SensorType:  r.SensorType,
 			Value:       r.Value,
-			RecordedAt:  r.RecordedAt.UTC().Format("2006-01-02 15:04:05"),
+			RecordedAt:  r.RecordedAt.Format("2006-01-02 15:04:05"),
 		}
 	}
 	sort.Slice(out, func(i, j int) bool {
 		return out[i].RecordedAt < out[j].RecordedAt
 	})
+	loc, _ := time.LoadLocation("Asia/Shanghai")
+	if loc != nil {
+		for i, row := range out {
+			if t, err := time.ParseInLocation("2006-01-02 15:04:05", row.RecordedAt, loc); err == nil {
+				out[i].RecordedAt = t.Format("2006-01-02 15:04:05")
+			}
+		}
+	}
 	return out, nil
 }
 
