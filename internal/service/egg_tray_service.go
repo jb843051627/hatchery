@@ -31,7 +31,13 @@ func (s *EggTrayService) Get(ctx context.Context, id int64) (*model.EggTray, err
 }
 
 func (s *EggTrayService) ListByBatch(ctx context.Context, batchID int64) ([]*model.EggTray, error) {
-	return s.store.ListByBatch(ctx, batchID)
+	trays, err := s.store.ListByBatch(ctx, batchID)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*model.EggTray, len(trays))
+	copy(out, trays)
+	return out, nil
 }
 
 func (s *EggTrayService) UpdateEggCount(ctx context.Context, id int64, count int) error {
