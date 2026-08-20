@@ -53,7 +53,7 @@ func (s *EggTrayStore) ListByBatch(ctx context.Context, batchID int64) ([]*model
 	s.mu.RLock()
 	if cached, ok := s.cache[batchID]; ok {
 		s.mu.RUnlock()
-		return cached, nil
+		return cloneTrays(cached), nil
 	}
 	s.mu.RUnlock()
 	rows, err := s.db.QueryContext(ctx,
@@ -73,7 +73,17 @@ func (s *EggTrayStore) ListByBatch(ctx context.Context, batchID int64) ([]*model
 	s.mu.Lock()
 	s.cache[batchID] = out
 	s.mu.Unlock()
-	return out, rows.Err()
+	return cloneTrays(out), rows.Err()
+}
+
+// cloneTrays 返回 slice 的浅拷贝，避免调用方对返回结果排序或重排时污染缓存中的原始 slice。
+func cloneTrays(in []*model.EggTray) []*model.EggTray {
+	if in == nil {
+		return nil
+	}
+	out := make([]*model.EggTray, len(in))
+	copy(out, in)
+	return out
 }
 
 func (s *EggTrayStore) UpdateEggCount(ctx context.Context, id int64, count int) error {
