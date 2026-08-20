@@ -29,7 +29,7 @@ func (s *AlertService) Create(ctx context.Context, incubatorID, batchID int64, l
 	}
 	id, err := s.store.Create(ctx, a)
 	if err != nil {
-		return 0, fmt.Errorf("create alert: %v", err)
+		return 0, fmt.Errorf("create alert: %w", err)
 	}
 	return id, nil
 }
