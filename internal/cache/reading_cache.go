@@ -52,14 +52,7 @@ func (c *ReadingCache) Snapshot() map[int64]map[string]*model.SensorReading {
 func (c *ReadingCache) AllForIncubator(incubatorID int64) map[string]*model.SensorReading {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	if m, ok := c.latest[incubatorID]; ok {
-		out := make(map[string]*model.SensorReading, len(m))
-		for k, v := range m {
-			out[k] = v
-		}
-		return out
-	}
-	return nil
+	return c.latest[incubatorID]
 }
 
 func (c *ReadingCache) Clear() {
